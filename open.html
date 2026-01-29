@@ -91,6 +91,8 @@
             font-size: 16px;
             font-weight: 500;
             transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
         }
         
         .btn:hover {
@@ -114,57 +116,34 @@
             gap: 12px;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         .store-btn {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 16px;
+            padding: 12px 20px;
             background: rgba(255,255,255,0.1);
             border-radius: 8px;
             text-decoration: none;
             color: white;
             font-size: 14px;
+            transition: background 0.2s;
         }
         
         .store-btn:hover {
             background: rgba(255,255,255,0.2);
         }
         
-        .content-preview {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .content-preview img {
-            width: 120px;
-            height: 170px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .content-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .content-type {
-            color: #fbbf24;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        #error-message {
+        #fallback {
             display: none;
-            color: #f87171;
-            margin-top: 20px;
+        }
+        
+        .divider {
+            margin: 24px 0;
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -174,95 +153,137 @@
         <h1>Opening <span class="app-name">Kansō</span>...</h1>
         <p id="status-text">Redirecting to the app</p>
         
-        <div class="loading">
+        <div class="loading" id="loading">
             <div class="spinner"></div>
         </div>
         
-        <div id="fallback" style="display: none;">
-            <p>Don't have the app yet?</p>
+        <div id="fallback">
             <div class="buttons">
-                <a href="#" id="open-app-btn" class="btn btn-primary">
-                    📱 Open in App
+                <button onclick="openApp()" class="btn btn-primary">
+                    📱 Open in Kansō
+                </button>
+            </div>
+            
+            <p class="divider">— or download the app —</p>
+            
+            <div class="store-buttons">
+                <a href="https://apps.apple.com/app/kanso/id123456789" class="store-btn" id="ios-btn">
+                    🍎 App Store
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=io.kanso.app" class="store-btn" id="android-btn">
+                    🤖 Play Store
                 </a>
             </div>
-            <div class="store-buttons">
-             <a href="https://apps.apple.com/app/idTU_APP_ID" class="store-btn">
-    🍎 App Store
-</a>
-<a href="https://play.google.com/store/apps/details?id=io.kanso.app" class="store-btn">
-    🤖 Play Store
-</a>
-            </div>
         </div>
-        
-        <p id="error-message"></p>
     </div>
 
     <script>
         // Obtener parámetros de la URL
-        // Formato: https://lokus55.github.io/kanso-privacy/open?type=anime&id=59978
         const urlParams = new URLSearchParams(window.location.search);
         const type = urlParams.get('type'); // anime, manga, user
         const id = urlParams.get('id');
         
-        // Construir el deep link
-        let deepLink = 'kanso://';
-        if (type && id) {
-            deepLink = `kanso://${type}/${id}`;
-        }
-        
-        // Actualizar el botón de abrir app
-        document.getElementById('open-app-btn').href = deepLink;
-        
-        // Función para detectar el sistema operativo
+        // Detectar sistema operativo
         function getMobileOS() {
-            const ua = navigator.userAgent;
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
             if (/android/i.test(ua)) return 'android';
-            if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
+            if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'ios';
             return 'other';
         }
         
-        // Intentar abrir la app automáticamente
-        function tryOpenApp() {
-            const os = getMobileOS();
-            const startTime = Date.now();
-            
-            // Crear un iframe oculto para intentar abrir el deep link
-            // Esto evita que Safari muestre un error si la app no está instalada
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = deepLink;
-            document.body.appendChild(iframe);
-            
-            // También intentar con window.location como fallback
-            setTimeout(() => {
-                window.location.href = deepLink;
-            }, 100);
-            
-            // Si después de 2.5 segundos seguimos aquí, mostrar opciones
-            setTimeout(() => {
-                const elapsed = Date.now() - startTime;
-                if (elapsed < 3000) {
-                    // Probablemente la app no está instalada
-                    document.querySelector('.loading').style.display = 'none';
-                    document.getElementById('status-text').textContent = 
-                        "It looks like you don't have Kansō installed";
-                    document.getElementById('fallback').style.display = 'block';
-                }
-            }, 2500);
+        const os = getMobileOS();
+        const packageName = 'io.kanso.app'; // Tu package name de Android
+        
+        // Construir los deep links
+        let customSchemeLink = 'kanso://';
+        let intentLink = '';
+        
+        if (type && id) {
+            customSchemeLink = `kanso://${type}/${id}`;
+            // Intent URL para Android - esto es clave!
+            intentLink = `intent://${type}/${id}#Intent;scheme=kanso;package=${packageName};end`;
         }
         
-        // Ejecutar cuando la página cargue
-        if (type && id) {
-            tryOpenApp();
-        } else {
-            // Si no hay parámetros, mostrar mensaje de error
-            document.querySelector('.loading').style.display = 'none';
-            document.getElementById('status-text').textContent = 'Invalid link';
-            document.getElementById('error-message').textContent = 
-                'This link appears to be invalid. Please check the URL.';
-            document.getElementById('error-message').style.display = 'block';
+        // Mostrar solo el botón relevante de la tienda
+        if (os === 'android') {
+            document.getElementById('ios-btn').style.display = 'none';
+        } else if (os === 'ios') {
+            document.getElementById('android-btn').style.display = 'none';
         }
+        
+        // Función para abrir la app
+        function openApp() {
+            if (os === 'android') {
+                // En Android, usar Intent URL
+                window.location.href = intentLink;
+            } else {
+                // En iOS y otros, usar custom scheme
+                window.location.href = customSchemeLink;
+            }
+        }
+        
+        // Función principal para intentar abrir la app
+        function tryOpenApp() {
+            if (!type || !id) {
+                // Si no hay parámetros válidos
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('status-text').textContent = 'Invalid link';
+                return;
+            }
+            
+            const startTime = Date.now();
+            
+            if (os === 'android') {
+                // ANDROID: Usar Intent URL directamente
+                // Esto abrirá la app si está instalada, o irá al Play Store si no
+                window.location.href = intentLink;
+                
+                // Mostrar fallback después de un delay
+                setTimeout(() => {
+                    showFallback();
+                }, 2000);
+                
+            } else if (os === 'ios') {
+                // iOS: Intentar custom scheme
+                window.location.href = customSchemeLink;
+                
+                // Si después de 2 segundos seguimos aquí, mostrar fallback
+                setTimeout(() => {
+                    if (document.visibilityState !== 'hidden') {
+                        showFallback();
+                    }
+                }, 2000);
+                
+            } else {
+                // Desktop u otro - mostrar opciones directamente
+                showFallback();
+            }
+        }
+        
+        function showFallback() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('status-text').textContent = "Tap the button to open in Kansō";
+            document.getElementById('fallback').style.display = 'block';
+        }
+        
+        // Detectar si el usuario vuelve a la página (la app no se abrió)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                // El usuario volvió, probablemente la app no estaba instalada
+                setTimeout(showFallback, 500);
+            }
+        });
+        
+        // Ejecutar cuando la página cargue
+        window.onload = function() {
+            if (type && id) {
+                tryOpenApp();
+            } else {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('status-text').textContent = 'Invalid link - missing parameters';
+                document.getElementById('fallback').style.display = 'block';
+            }
+        };
     </script>
 </body>
 </html>
