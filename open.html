@@ -5,20 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opening Kansō...</title>
     
-    <!-- Meta tags para preview en redes sociales -->
     <meta property="og:title" content="Kansō - Anime & Manga Tracker">
     <meta property="og:description" content="Track your anime and manga journey">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="https://lokus55.github.io/kanso-privacy/logo.png">
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             display: flex;
@@ -27,129 +23,68 @@
             color: white;
         }
         
-        .container {
-            text-align: center;
-            padding: 40px 20px;
-            max-width: 400px;
-        }
+        .container { text-align: center; padding: 40px 20px; max-width: 400px; }
         
         .logo {
-            font-size: 64px;
-            margin-bottom: 20px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            border-radius: 24px;
+            overflow: hidden;
         }
         
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            font-weight: 300;
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
-        .app-name {
-            font-weight: 600;
-            color: #fbbf24;
-        }
+        h1 { font-size: 28px; margin-bottom: 10px; font-weight: 300; }
+        .app-name { font-weight: 600; color: #f9a8d4; }
+        p { color: #a0a0a0; margin-bottom: 30px; font-size: 16px; }
         
-        p {
-            color: #a0a0a0;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-        
-        .loading {
-            margin: 30px 0;
-        }
-        
+        .loading { margin: 30px 0; }
         .spinner {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: #fbbf24;
+            border-top-color: #f9a8d4;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 30px;
-        }
+        .buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 30px; }
         
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 14px 24px; border-radius: 12px;
+            text-decoration: none; font-size: 16px; font-weight: 500;
+            cursor: pointer; border: none;
             transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-            border: none;
         }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .btn-primary { background: #f9a8d4; color: #1a1a2e; }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        
-        .btn-primary {
-            background: #fbbf24;
-            color: #1a1a2e;
-        }
-        
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .store-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
+        .store-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
         .store-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            text-decoration: none;
-            color: white;
-            font-size: 14px;
-            transition: background 0.2s;
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 20px; background: rgba(255,255,255,0.1);
+            border-radius: 8px; text-decoration: none; color: white; font-size: 14px;
         }
+        .store-btn:hover { background: rgba(255,255,255,0.2); }
         
-        .store-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        #fallback {
-            display: none;
-        }
-        
-        .divider {
-            margin: 24px 0;
-            color: #666;
-            font-size: 14px;
-        }
+        #fallback { display: none; }
+        .divider { margin: 24px 0; color: #666; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🎬</div>
+        <!-- LOGO - Sube tu imagen como "logo.png" al mismo repositorio -->
+        <div class="logo">
+            <img src="logo.png" alt="Kansō Logo" onerror="this.parentElement.innerHTML='🎬'; this.parentElement.style.fontSize='64px';">
+        </div>
+        
         <h1>Opening <span class="app-name">Kansō</span>...</h1>
         <p id="status-text">Redirecting to the app</p>
         
@@ -170,7 +105,7 @@
                 <a href="https://apps.apple.com/app/kanso/id123456789" class="store-btn" id="ios-btn">
                     🍎 App Store
                 </a>
-                <a href="https://play.google.com/store/apps/details?id=io.kanso.app" class="store-btn" id="android-btn">
+                <a href="https://play.google.com/store/apps/details?id=com.zaurio.kanso" class="store-btn" id="android-btn">
                     🤖 Play Store
                 </a>
             </div>
@@ -178,12 +113,10 @@
     </div>
 
     <script>
-        // Obtener parámetros de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const type = urlParams.get('type'); // anime, manga, user
+        const type = urlParams.get('type');
         const id = urlParams.get('id');
         
-        // Detectar sistema operativo
         function getMobileOS() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             if (/android/i.test(ua)) return 'android';
@@ -192,70 +125,46 @@
         }
         
         const os = getMobileOS();
-        const packageName = 'io.kanso.app'; // Tu package name de Android
+        const packageName = 'com.zaurio.kanso';
         
-        // Construir los deep links
         let customSchemeLink = 'kanso://';
         let intentLink = '';
         
         if (type && id) {
             customSchemeLink = `kanso://${type}/${id}`;
-            // Intent URL para Android - esto es clave!
             intentLink = `intent://${type}/${id}#Intent;scheme=kanso;package=${packageName};end`;
         }
         
-        // Mostrar solo el botón relevante de la tienda
         if (os === 'android') {
             document.getElementById('ios-btn').style.display = 'none';
         } else if (os === 'ios') {
             document.getElementById('android-btn').style.display = 'none';
         }
         
-        // Función para abrir la app
         function openApp() {
             if (os === 'android') {
-                // En Android, usar Intent URL
                 window.location.href = intentLink;
             } else {
-                // En iOS y otros, usar custom scheme
                 window.location.href = customSchemeLink;
             }
         }
         
-        // Función principal para intentar abrir la app
         function tryOpenApp() {
             if (!type || !id) {
-                // Si no hay parámetros válidos
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('status-text').textContent = 'Invalid link';
                 return;
             }
             
-            const startTime = Date.now();
-            
             if (os === 'android') {
-                // ANDROID: Usar Intent URL directamente
-                // Esto abrirá la app si está instalada, o irá al Play Store si no
                 window.location.href = intentLink;
-                
-                // Mostrar fallback después de un delay
-                setTimeout(() => {
-                    showFallback();
-                }, 2000);
-                
+                setTimeout(showFallback, 2000);
             } else if (os === 'ios') {
-                // iOS: Intentar custom scheme
                 window.location.href = customSchemeLink;
-                
-                // Si después de 2 segundos seguimos aquí, mostrar fallback
                 setTimeout(() => {
-                    if (document.visibilityState !== 'hidden') {
-                        showFallback();
-                    }
+                    if (document.visibilityState !== 'hidden') showFallback();
                 }, 2000);
-                
             } else {
-                // Desktop u otro - mostrar opciones directamente
                 showFallback();
             }
         }
@@ -266,21 +175,15 @@
             document.getElementById('fallback').style.display = 'block';
         }
         
-        // Detectar si el usuario vuelve a la página (la app no se abrió)
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                // El usuario volvió, probablemente la app no estaba instalada
-                setTimeout(showFallback, 500);
-            }
+            if (document.visibilityState === 'visible') setTimeout(showFallback, 500);
         });
         
-        // Ejecutar cuando la página cargue
         window.onload = function() {
-            if (type && id) {
-                tryOpenApp();
-            } else {
+            if (type && id) tryOpenApp();
+            else {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('status-text').textContent = 'Invalid link - missing parameters';
+                document.getElementById('status-text').textContent = 'Invalid link';
                 document.getElementById('fallback').style.display = 'block';
             }
         };
